@@ -35,7 +35,8 @@ public class Formulario extends javax.swing.JFrame {
         txtNombre = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        listClientes = new javax.swing.JList<>();
+        listaClientes = new javax.swing.JList<>();
+        btnEliminar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -48,15 +49,26 @@ public class Formulario extends javax.swing.JFrame {
 
         jLabel1.setText("Nombre:");
 
-        jScrollPane1.setViewportView(listClientes);
+        jScrollPane1.setViewportView(listaClientes);
+
+        btnEliminar.setText("Eliminar");
+        btnEliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEliminarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 171, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(btnEliminar))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 171, Short.MAX_VALUE))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(65, 65, 65)
@@ -82,7 +94,9 @@ public class Formulario extends javax.swing.JFrame {
                             .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnGuardar)))
-                .addGap(75, 75, 75))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnEliminar)
+                .addGap(46, 46, 46))
         );
 
         pack();
@@ -99,13 +113,21 @@ public class Formulario extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(rootPane, "El cliente se guardó correctamente");
     }//GEN-LAST:event_btnGuardarActionPerformed
 
+    private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
+        
+        int indice = listaClientes.getSelectedIndex();
+        lista.remove(indice);
+        actualizarLista();
+        JOptionPane.showMessageDialog(rootPane, "El cliente se eliminó correctamente");
+    }//GEN-LAST:event_btnEliminarActionPerformed
+
     private void actualizarLista() {
         DefaultListModel datos = new DefaultListModel();
         for (int i = 0; i < lista.size(); i++) {
             String nombre = lista.get(i);
             datos.addElement(nombre);
         }
-        this.listClientes.setModel(datos);
+        this.listaClientes.setModel(datos);
     }
     /**
      * @param args the command line arguments
@@ -143,10 +165,11 @@ public class Formulario extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnEliminar;
     private javax.swing.JButton btnGuardar;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JList<String> listClientes;
+    private javax.swing.JList<String> listaClientes;
     private javax.swing.JTextField txtNombre;
     // End of variables declaration//GEN-END:variables
 }
