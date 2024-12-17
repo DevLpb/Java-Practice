@@ -29,8 +29,10 @@ public class Formulario extends javax.swing.JFrame {
     private void initComponents() {
 
         btnCalcular = new javax.swing.JButton();
-        LabelNombre = new javax.swing.JLabel();
-        txtNombre = new javax.swing.JTextField();
+        LabelAltura = new javax.swing.JLabel();
+        txtAltura = new javax.swing.JTextField();
+        txtPeso = new javax.swing.JTextField();
+        LabelPeso = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -41,41 +43,61 @@ public class Formulario extends javax.swing.JFrame {
             }
         });
 
-        LabelNombre.setText("Nombre:");
+        LabelAltura.setText("Altura:");
+        LabelAltura.setToolTipText("");
+
+        LabelPeso.setText("Peso:");
+        LabelPeso.setToolTipText("");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(195, Short.MAX_VALUE)
+                .addGap(104, 104, 104)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(btnCalcular)
-                        .addGap(78, 78, 78))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(LabelNombre)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())))
+                    .addComponent(LabelAltura)
+                    .addComponent(LabelPeso))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtPeso, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtAltura, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(11, 11, 11)
+                        .addComponent(btnCalcular)))
+                .addContainerGap(103, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(83, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(LabelNombre)
-                    .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(82, 82, 82)
+                    .addComponent(LabelAltura)
+                    .addComponent(txtAltura, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(LabelPeso)
+                    .addComponent(txtPeso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(32, 32, 32)
                 .addComponent(btnCalcular)
-                .addGap(90, 90, 90))
+                .addGap(100, 100, 100))
         );
+
+        LabelAltura.getAccessibleContext().setAccessibleName("Altura");
+        LabelPeso.getAccessibleContext().setAccessibleName("Peso");
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnCalcularActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCalcularActionPerformed
-        JOptionPane.showMessageDialog(rootPane, "Saludos, " + txtNombre.getText());
+        String strAltura = this.txtAltura.getText();
+        String strPeso = this.txtPeso.getText();
+        
+        double altura = Double.valueOf(strAltura);
+        double peso = Double.valueOf(strPeso);
+        double imc = peso / (altura * altura);
+        
+        JOptionPane.showMessageDialog(rootPane, "El Índice de Masa Corporal (IMC) es: " + imc);
     }//GEN-LAST:event_btnCalcularActionPerformed
 
     /**
@@ -114,8 +136,10 @@ public class Formulario extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel LabelNombre;
+    private javax.swing.JLabel LabelAltura;
+    private javax.swing.JLabel LabelPeso;
     private javax.swing.JButton btnCalcular;
-    private javax.swing.JTextField txtNombre;
+    private javax.swing.JTextField txtAltura;
+    private javax.swing.JTextField txtPeso;
     // End of variables declaration//GEN-END:variables
 }
