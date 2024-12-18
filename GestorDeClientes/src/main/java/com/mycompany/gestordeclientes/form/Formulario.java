@@ -4,6 +4,7 @@
  */
 package com.mycompany.gestordeclientes.form;
 
+import com.mycompany.gestordeclientes.dao.ClienteDao;
 import com.mycompany.gestordeclientes.model.Cliente;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,8 +45,17 @@ public class Formulario extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         txtTelefono = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
+        btnEditar = new javax.swing.JButton();
+        jLabel5 = new javax.swing.JLabel();
+        labelId = new javax.swing.JLabel();
+        btnNuevo = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentShown(java.awt.event.ComponentEvent evt) {
+                formComponentShown(evt);
+            }
+        });
 
         btnGuardar.setText("Guardar");
         btnGuardar.addActionListener(new java.awt.event.ActionListener() {
@@ -71,6 +81,22 @@ public class Formulario extends javax.swing.JFrame {
 
         jLabel4.setText("Teléfono:");
 
+        btnEditar.setText("Editar");
+        btnEditar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditarActionPerformed(evt);
+            }
+        });
+
+        jLabel5.setText("id:");
+
+        btnNuevo.setText("Nuevo");
+        btnNuevo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnNuevoActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -79,9 +105,11 @@ public class Formulario extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGap(0, 3, Short.MAX_VALUE)
+                        .addComponent(btnEditar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnEliminar))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 149, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(65, 65, 65)
@@ -89,17 +117,23 @@ public class Formulario extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
                             .addComponent(jLabel2)
                             .addComponent(jLabel4)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel5))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtTelefono, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtApellido, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(labelId))))
                 .addGap(17, 17, 17))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(48, 48, 48)
+                .addComponent(btnNuevo)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -109,7 +143,11 @@ public class Formulario extends javax.swing.JFrame {
                         .addContainerGap()
                         .addComponent(jScrollPane1))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(32, 32, 32)
+                        .addGap(10, 10, 10)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel5)
+                            .addComponent(labelId))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel1)
                             .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -128,41 +166,95 @@ public class Formulario extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnGuardar)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnEliminar)
-                .addGap(46, 46, 46))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnEliminar)
+                    .addComponent(btnEditar))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnNuevo)
+                .addGap(11, 11, 11))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    //Lista de clientes
-    private List<Cliente> lista = new ArrayList<Cliente>();
+    //Lista de clientes local
+    private List<Cliente> lista = new ArrayList<>();
     
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
 
-      
-        Cliente cliente = new Cliente();
-        cliente.setNombre(this.txtNombre.getText());
-        cliente.setApellido(this.txtApellido.getText());
-        cliente.setEmail(this.txtEmail.getText());
-        cliente.setTelefono(this.txtTelefono.getText());
-
-        lista.add(cliente);
-        actualizarLista();
-        JOptionPane.showMessageDialog(rootPane, "El cliente se guardó correctamente");
+        //Verifica si alguna caja de texto está vacía
+        if (txtNombre.getText().trim().isEmpty() ||
+                txtApellido.getText().trim().isEmpty() ||
+                txtEmail.getText().trim().isEmpty() ||
+                txtTelefono.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Todos los campos deben estar llenos.", "Error", JOptionPane.ERROR_MESSAGE);
+            return; //Detiene la ejecución si hay campos vacíos
+        }
         
-        limpiarCajaDeTexto();
+        Cliente cliente = new Cliente();
+        cliente.setNombre(txtNombre.getText());
+        cliente.setApellido(txtApellido.getText());
+        cliente.setEmail(txtEmail.getText());
+        cliente.setTelefono(txtTelefono.getText());
+  
+        /*
+        Si el id del label tiene un número, asigna ese número como id de cliente para editar.
+        Si está vacío, no asigna ningún id y se crea uno nuevo.
+        */
+        if (!labelId.getText().equals("")) {
+            cliente.setId(Integer.parseInt(labelId.getText()));
+        }
+        ClienteDao dao = new ClienteDao();
+        dao.guardar(cliente);
+        
+        actualizarLista();
+        JOptionPane.showMessageDialog(rootPane, "El cliente se guardó correctamente.");
+        
+        limpiarCajasDeTexto();
     }//GEN-LAST:event_btnGuardarActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
-        
         int indice = listaClientes.getSelectedIndex();
-        lista.remove(indice);
+        
+        if (indice == -1) {
+            JOptionPane.showMessageDialog(this, "Debe seleccionar un elemento de la lista.", "Error", JOptionPane.ERROR_MESSAGE);
+            return; //Detiene la ejecución ante un error
+        }
+        
+        Cliente cliente = lista.get(indice);
+        ClienteDao dao = new ClienteDao();
+        dao.eliminar(cliente.getId());
         actualizarLista();
-        JOptionPane.showMessageDialog(rootPane, "El cliente se eliminó correctamente");
+        JOptionPane.showMessageDialog(rootPane, "El cliente se eliminó correctamente.");
     }//GEN-LAST:event_btnEliminarActionPerformed
 
+    private void formComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentShown
+        actualizarLista();
+    }//GEN-LAST:event_formComponentShown
+
+    private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
+        int indice = listaClientes.getSelectedIndex();
+        if (indice == -1) {
+            JOptionPane.showMessageDialog(this, "Debe seleccionar un elemento de la lista.", "Error", JOptionPane.ERROR_MESSAGE);
+            return; //Detiene la ejecución ante un error
+        }
+        Cliente cliente = lista.get(indice);
+        
+        txtNombre.setText(cliente.getNombre());
+        txtApellido.setText(cliente.getApellido());
+        txtEmail.setText(cliente.getEmail());
+        txtTelefono.setText(cliente.getTelefono());
+        labelId.setText(String.valueOf(cliente.getId()));
+    }//GEN-LAST:event_btnEditarActionPerformed
+
+    private void btnNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevoActionPerformed
+        limpiarCajasDeTexto();
+    }//GEN-LAST:event_btnNuevoActionPerformed
+
     private void actualizarLista() {
+        
+        ClienteDao dao = new ClienteDao();
+        lista = dao.listar();
         DefaultListModel datos = new DefaultListModel();
         for (int i = 0; i < lista.size(); i++) {
             Cliente cliente = lista.get(i);
@@ -171,11 +263,12 @@ public class Formulario extends javax.swing.JFrame {
         this.listaClientes.setModel(datos);
     }
     
-    private void limpiarCajaDeTexto() {
+    private void limpiarCajasDeTexto() {
         txtNombre.setText("");
         txtApellido.setText("");
         txtEmail.setText("");
         txtTelefono.setText("");
+        labelId.setText("");
     }
     /**
      * @param args the command line arguments
@@ -213,13 +306,17 @@ public class Formulario extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnEditar;
     private javax.swing.JButton btnEliminar;
     private javax.swing.JButton btnGuardar;
+    private javax.swing.JButton btnNuevo;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel labelId;
     private javax.swing.JList<String> listaClientes;
     private javax.swing.JTextField txtApellido;
     private javax.swing.JTextField txtEmail;

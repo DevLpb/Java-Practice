@@ -9,11 +9,20 @@ package com.mycompany.gestordeclientes.model;
  * @author pc
  */
 public class Cliente {
+   private int id;
    private String nombre;
    private String apellido;
    private String email;
    private String telefono;
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+   
     public String getNombre() {
         return nombre;
     }
