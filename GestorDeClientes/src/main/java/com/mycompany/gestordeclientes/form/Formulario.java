@@ -2,8 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package com.mycompany.gestordeclientes;
+package com.mycompany.gestordeclientes.form;
 
+import com.mycompany.gestordeclientes.model.Cliente;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.DefaultListModel;
@@ -140,17 +141,17 @@ public class Formulario extends javax.swing.JFrame {
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
 
       
-      Cliente cliente = new Cliente();
-      cliente.setNombre(this.txtNombre.getText());
-      cliente.setApellido(this.txtApellido.getText());
-      cliente.setEmail(this.txtEmail.getText());
-      cliente.setTelefono(this.txtTelefono.getText());
-      
-      
-      
-      lista.add(cliente);
-      actualizarLista();
+        Cliente cliente = new Cliente();
+        cliente.setNombre(this.txtNombre.getText());
+        cliente.setApellido(this.txtApellido.getText());
+        cliente.setEmail(this.txtEmail.getText());
+        cliente.setTelefono(this.txtTelefono.getText());
+
+        lista.add(cliente);
+        actualizarLista();
         JOptionPane.showMessageDialog(rootPane, "El cliente se guardó correctamente");
+        
+        limpiarCajaDeTexto();
     }//GEN-LAST:event_btnGuardarActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
@@ -168,6 +169,13 @@ public class Formulario extends javax.swing.JFrame {
             datos.addElement(cliente.getNombreCompleto());
         }
         this.listaClientes.setModel(datos);
+    }
+    
+    private void limpiarCajaDeTexto() {
+        txtNombre.setText("");
+        txtApellido.setText("");
+        txtEmail.setText("");
+        txtTelefono.setText("");
     }
     /**
      * @param args the command line arguments

@@ -4,6 +4,8 @@
 
 package com.mycompany.gestordeclientes;
 
+import com.mycompany.gestordeclientes.form.Formulario;
+
 /**
  *
  * @author pc
