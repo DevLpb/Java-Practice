@@ -26,9 +26,9 @@ public class ClienteDao {
         String password = "";
         String host = "localhost";
         String puerto = "3306";
-        String driver = "com.mysql.jdbc.Driver";
+        String driver = "com.mysql.cj.jdbc.Driver"; // Driver actualizado
 
-        String conexionUrl = "jdbc:mysql://" + host + ":" + puerto + "/" + baseDeDatos + "?useSSL=false";
+        String conexionUrl = "jdbc:mysql://" + host + ":" + puerto + "/" + baseDeDatos + "?useSSL=false&allowPublicKeyRetrieval=true"; // Actualizado
 
         Connection conexion = null;
         try {
@@ -39,7 +39,6 @@ public class ClienteDao {
             Logger.getLogger(ClienteDao.class.getName()).log(Level.SEVERE, null, ex);
         }
         return conexion;
-
     }
 
     public void agregar(Cliente cliente) {
@@ -112,10 +111,10 @@ public class ClienteDao {
     }
 
     public void guardar(Cliente cliente) {
-        if (cliente.getId() == 0)
-        agregar(cliente);
-    else {
-          actualizar(cliente);
+        if (cliente.getId() == 0) {
+            agregar(cliente);
+        } else {
+            actualizar(cliente);
+        }
     }
-}
 }
