@@ -23,6 +23,7 @@ public class Panel extends javax.swing.JFrame {
      */
     public Panel() {
         initComponents();
+        actualizarVisibilidadBotones(); //Muestra los botones Editar y Eliminar cuando corresponde
         agregarListSelectionListener(); //Event Listener
     }
 
@@ -57,6 +58,9 @@ public class Panel extends javax.swing.JFrame {
 
         labelTareasPendientes.setText("Tareas Pendientes");
 
+        jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
+        listaDeTareas.setPreferredSize(new java.awt.Dimension(268, 500));
         jScrollPane1.setViewportView(listaDeTareas);
         listaDeTareas.getAccessibleContext().setAccessibleName("CuadroDeTareas");
 
@@ -91,32 +95,29 @@ public class Panel extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnEditar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnEliminar))
+                    .addComponent(labelTareasPendientes)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(91, 91, 91)
+                        .addComponent(labelDescripcion))
+                    .addGroup(layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 292, Short.MAX_VALUE)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(btnEditar)
+                                .addComponent(btnNuevaTarea)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnEliminar))
-                            .addComponent(labelTareasPendientes)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(12, 12, 12)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(labelDescripcion)
-                                        .addGap(0, 0, Short.MAX_VALUE))
-                                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 230, Short.MAX_VALUE)))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(btnNuevaTarea))))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(btnGuardar)))
-                .addContainerGap())
+                                .addComponent(btnGuardar)
+                                .addGap(0, 0, Short.MAX_VALUE)))))
+                .addGap(23, 23, 23))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -127,16 +128,20 @@ public class Panel extends javax.swing.JFrame {
                     .addComponent(labelDescripcion))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane1)
-                    .addComponent(jScrollPane2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnNuevaTarea)
-                    .addComponent(btnEditar)
-                    .addComponent(btnEliminar))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 84, Short.MAX_VALUE)
-                .addComponent(btnGuardar)
-                .addContainerGap())
+                    .addComponent(jScrollPane2)
+                    .addComponent(jScrollPane1))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnEditar)
+                            .addComponent(btnEliminar))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnNuevaTarea)
+                            .addComponent(btnGuardar))
+                        .addContainerGap(98, Short.MAX_VALUE))))
         );
 
         pack();
@@ -180,20 +185,20 @@ public class Panel extends javax.swing.JFrame {
 
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
         int indice = listaDeTareas.getSelectedIndex();
-        
+
         try {
             if (indice != -1) {
                 lista.get(indice).setNombre(JOptionPane.showInputDialog("Ingrese un nuevo nombre para la tarea."));
-        lista.get(indice).setDescripcion(JOptionPane.showInputDialog("Ingrese una nueva descripción para la tarea."));
-        actualizarLista();
-        JOptionPane.showMessageDialog(rootPane, "La tarea fue editada correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                lista.get(indice).setDescripcion(JOptionPane.showInputDialog("Ingrese una nueva descripción para la tarea."));
+                actualizarLista();
+                JOptionPane.showMessageDialog(rootPane, "La tarea fue editada correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
             } else {
                 JOptionPane.showMessageDialog(rootPane, "No se pudo editar la tarea. Por favor, selecciona una tarea válida.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } catch (IndexOutOfBoundsException e) {
             JOptionPane.showMessageDialog(rootPane, "No se pudo editar la tarea. Por favor, selecciona una tarea válida.", "Error", JOptionPane.ERROR_MESSAGE);
         }
-        
+
     }//GEN-LAST:event_btnEditarActionPerformed
 
     /*Crea el modelo de lista a partir de recorrer la lista global en un bucle for
@@ -206,6 +211,17 @@ public class Panel extends javax.swing.JFrame {
         }
         listaDeTareas.setModel(listaModelo);
         textArea.setText("");
+        actualizarVisibilidadBotones();
+    }
+
+    private void actualizarVisibilidadBotones() {
+        if (lista.isEmpty()) {
+            btnEditar.setVisible(false);
+            btnEliminar.setVisible(false);
+        } else {
+            btnEditar.setVisible(true);
+            btnEliminar.setVisible(true);
+        }
     }
 
     /*Event Listener que llena el cuadro de descripción 
