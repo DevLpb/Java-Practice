@@ -59,6 +59,8 @@ public class Panel extends javax.swing.JFrame {
         labelTareasPendientes.setText("Tareas Pendientes");
 
         jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        jScrollPane1.setAutoscrolls(true);
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(268, 130));
 
         listaDeTareas.setPreferredSize(new java.awt.Dimension(268, 500));
         jScrollPane1.setViewportView(listaDeTareas);
@@ -103,21 +105,22 @@ public class Panel extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnEliminar))
                     .addComponent(labelTareasPendientes)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(91, 91, 91)
-                        .addComponent(labelDescripcion))
+                        .addGap(79, 79, 79)
+                        .addComponent(labelDescripcion)
+                        .addGap(23, 23, 23))
                     .addGroup(layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 292, Short.MAX_VALUE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(btnNuevaTarea)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnGuardar)
-                                .addGap(0, 0, Short.MAX_VALUE)))))
-                .addGap(23, 23, 23))
+                        .addComponent(btnNuevaTarea)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnGuardar)
+                        .addGap(0, 126, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane2)
+                        .addContainerGap())))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -129,7 +132,7 @@ public class Panel extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jScrollPane2)
-                    .addComponent(jScrollPane1))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
@@ -154,15 +157,20 @@ public class Panel extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(rootPane, "Test");
     }//GEN-LAST:event_btnGuardarActionPerformed
 
+    //Crea una nueva tarea, el nombre es obligatorio.
     private void btnNuevaTareaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevaTareaActionPerformed
         Tarea tarea = new Tarea();
-        tarea.setNombre(JOptionPane.showInputDialog("Ingrese un nombre para la tarea."));
-        tarea.setDescripcion(JOptionPane.showInputDialog("Ingrese una descripción para la tarea."));
+        
+        String nombre = leerEntrada("Ingrese un nombre para la tarea.");
+        if (nombre == null) { return; } //Si se cancela sale del método
+        tarea.setNombre(nombre);
+        
+        String descripcion = JOptionPane.showInputDialog(rootPane, "Ingrese una descripción para la tarea.");
+        if (descripcion == null) { return; } //Si se cancela sale del método
+        tarea.setDescripcion(descripcion);
         lista.add(tarea);
-
         actualizarLista();
-        JOptionPane.showMessageDialog(rootPane, "La tarea fue añadida con éxito.", "Exito", JOptionPane.INFORMATION_MESSAGE);
-
+        JOptionPane.showMessageDialog(rootPane, "Tarea agregada con éxito", "Éxito", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_btnNuevaTareaActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
@@ -185,11 +193,16 @@ public class Panel extends javax.swing.JFrame {
 
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
         int indice = listaDeTareas.getSelectedIndex();
-
+ 
         try {
             if (indice != -1) {
-                lista.get(indice).setNombre(JOptionPane.showInputDialog("Ingrese un nuevo nombre para la tarea."));
-                lista.get(indice).setDescripcion(JOptionPane.showInputDialog("Ingrese una nueva descripción para la tarea."));
+                String nombre = leerEntrada("Ingrese un nuevo nombre para la tarea.");
+                if (nombre == null) { return; } //Cancela la edición
+                
+                String descripcion = JOptionPane.showInputDialog(rootPane, "Ingrese una nueva descripción para la tarea.");
+                if (descripcion == null) { return; } //Cancela la edición
+                lista.get(indice).setNombre(nombre);
+                lista.get(indice).setDescripcion(descripcion);
                 actualizarLista();
                 JOptionPane.showMessageDialog(rootPane, "La tarea fue editada correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
             } else {
@@ -198,9 +211,17 @@ public class Panel extends javax.swing.JFrame {
         } catch (IndexOutOfBoundsException e) {
             JOptionPane.showMessageDialog(rootPane, "No se pudo editar la tarea. Por favor, selecciona una tarea válida.", "Error", JOptionPane.ERROR_MESSAGE);
         }
-
     }//GEN-LAST:event_btnEditarActionPerformed
 
+    /* Método encargado de leer las entradas de los inputs y repetir la petición si no se ingresa un valor. */
+    private String leerEntrada(String mensaje) {
+        String input = JOptionPane.showInputDialog(rootPane, mensaje);
+        while (input != null && input.isEmpty()) {
+            input = JOptionPane.showInputDialog(rootPane, "Debe ingresar un valor. " + mensaje);
+        } 
+        return input;
+    }
+    
     /*Crea el modelo de lista a partir de recorrer la lista global en un bucle for
       Luego establece ese modelo en el componente listaDeTareas y limpia el text area. */
     private void actualizarLista() {
