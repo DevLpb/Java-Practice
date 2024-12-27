@@ -1,10 +1,8 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
-package com.mycompany.gestiondetareas;
+package com.mycompany.gestiondetareas.vista;
 
-import com.mycompany.gestiondetareas.Tarea;
+import com.mycompany.gestiondetareas.dao.TareaDAO;
+import com.mycompany.gestiondetareas.dao.TareaDAOImpl;
+import com.mycompany.gestiondetareas.modelo.Tarea;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.DefaultListModel;
@@ -25,6 +23,18 @@ public class Panel extends javax.swing.JFrame {
         initComponents();
         actualizarVisibilidadBotones(); //Muestra los botones Editar y Eliminar cuando corresponde
         agregarListSelectionListener(); //Event Listener
+    }
+
+    private TareaDAO tareaDAO;
+
+    public void inicializarDAO() {
+        tareaDAO = new TareaDAOImpl(); //Inicializa el DAO
+        cargarTareasDesdeBD(); //Carga las tareas desde la base de datos
+    }
+
+    private void cargarTareasDesdeBD() {
+        lista = tareaDAO.getAllTareas();
+        actualizarLista();
     }
 
     /**
@@ -112,15 +122,17 @@ public class Panel extends javax.swing.JFrame {
                         .addComponent(labelDescripcion)
                         .addGap(23, 23, 23))
                     .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnNuevaTarea)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnGuardar)
-                        .addGap(0, 126, Short.MAX_VALUE))
+                        .addComponent(btnNuevaTarea)
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane2)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 299, Short.MAX_VALUE)
                         .addContainerGap())))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnGuardar)
+                .addGap(14, 14, 14))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -141,10 +153,10 @@ public class Panel extends javax.swing.JFrame {
                             .addComponent(btnEliminar))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btnNuevaTarea)
-                            .addComponent(btnGuardar))
-                        .addContainerGap(98, Short.MAX_VALUE))))
+                        .addComponent(btnNuevaTarea)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 69, Short.MAX_VALUE)
+                        .addComponent(btnGuardar)
+                        .addContainerGap())))
         );
 
         pack();
@@ -154,31 +166,64 @@ public class Panel extends javax.swing.JFrame {
     List<Tarea> lista = new ArrayList();
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
-        JOptionPane.showMessageDialog(rootPane, "Test");
+        List<Tarea> tareasParaEliminar = new ArrayList<>(); // Lista temporal para las tareas a eliminar
+
+        for (Tarea tarea : lista) {
+            switch (tarea.getEstado()) {
+                case "nueva":
+                    if (tarea.getId() == 0) {
+                        tareaDAO.addTarea(tarea); //Agregar una nueva tarea a la base de datos
+                        System.out.println("Tarea creada");
+                    }
+                    break;
+                case "editada":
+                    tareaDAO.updateTarea(tarea); //Actualizar tarea existente en la base de datos
+                    System.out.println("Tarea editada");
+                    break;
+                case "eliminada":
+                    tareaDAO.deleteTarea(tarea.getId()); //Eliminar tarea de la base de datos
+                    tareasParaEliminar.add(tarea); //Agregar a la lista de tareas para eliminar
+                    System.out.println("Eliminada");
+                    break;
+            }
+        }
+
+        lista.removeAll(tareasParaEliminar); //Elimina las tareas de la lista local;
+        actualizarLista(); //Actualiza la vista
+        //Reiniciar estados después de guardar
+        for (Tarea tarea : lista) {
+            tarea.setEstado(""); //Reinicia estado
+        }
+
+        JOptionPane.showMessageDialog(rootPane, "Cambios guardados con éxito", "Èxito", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_btnGuardarActionPerformed
 
     //Crea una nueva tarea, el nombre es obligatorio.
     private void btnNuevaTareaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevaTareaActionPerformed
         Tarea tarea = new Tarea();
-        
-        String nombre = leerEntrada("Ingrese un nombre para la tarea.");
-        if (nombre == null) { return; } //Si se cancela sale del método
+
+        String nombre = leerEntrada("Ingrese un nombre para la tarea."); //Método exclusivo para la entrada de nombre
+        if (nombre == null) {
+            return;
+        } //Si se cancela sale del método
         tarea.setNombre(nombre);
-        
+
         String descripcion = JOptionPane.showInputDialog(rootPane, "Ingrese una descripción para la tarea.");
-        if (descripcion == null) { return; } //Si se cancela sale del método
+        if (descripcion == null) {
+            return;
+        } //Si se cancela sale del método
         tarea.setDescripcion(descripcion);
-        lista.add(tarea);
+        lista.add(tarea); //Agrega a la lista global
         actualizarLista();
         JOptionPane.showMessageDialog(rootPane, "Tarea agregada con éxito", "Éxito", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_btnNuevaTareaActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
-        int indice = listaDeTareas.getSelectedIndex();
-
+        int indice = listaDeTareas.getSelectedIndex(); //Guarda el lugar del elemento seleccionado en la variable "indice" 
         try {
             if (indice != -1) {
-                lista.remove(indice);
+                lista.get(indice).setEstado("eliminada"); //Cambia el estado de la tarea a "eliminada" 
+                //lista.remove(indice); //Elimina el elemento de la lista global usando el índice correspondiente 
                 actualizarLista();
                 JOptionPane.showMessageDialog(rootPane, "La tarea se eliminó con éxito", "Éxito", JOptionPane.INFORMATION_MESSAGE);
             } else {
@@ -187,22 +232,26 @@ public class Panel extends javax.swing.JFrame {
         } catch (IndexOutOfBoundsException e) {
             JOptionPane.showMessageDialog(rootPane, "No se pudo eliminar la tarea. Por favor, selecciona una tarea válida.", "Error", JOptionPane.ERROR_MESSAGE);
         }
-
-
     }//GEN-LAST:event_btnEliminarActionPerformed
 
+
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
-        int indice = listaDeTareas.getSelectedIndex();
- 
+        int indice = listaDeTareas.getSelectedIndex(); //Guarda el lugar del elemento seleccionado en la variable "indice"
+
         try {
             if (indice != -1) {
                 String nombre = leerEntrada("Ingrese un nuevo nombre para la tarea.");
-                if (nombre == null) { return; } //Cancela la edición
-                
+                if (nombre == null) {
+                    return;
+                } //Cancela la edición
+
                 String descripcion = JOptionPane.showInputDialog(rootPane, "Ingrese una nueva descripción para la tarea.");
-                if (descripcion == null) { return; } //Cancela la edición
-                lista.get(indice).setNombre(nombre);
-                lista.get(indice).setDescripcion(descripcion);
+                if (descripcion == null) {
+                    return;
+                } //Cancela la edición
+                lista.get(indice).setNombre(nombre); //Altera el elemento de la lista global usando el índice correspondiente
+                lista.get(indice).setDescripcion(descripcion); //Altera el elemento de la lista global usando el índice correspondiente
+                lista.get(indice).setEstado("editada"); //Cambia el estado de la tarea a "editada"
                 actualizarLista();
                 JOptionPane.showMessageDialog(rootPane, "La tarea fue editada correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
             } else {
@@ -218,17 +267,19 @@ public class Panel extends javax.swing.JFrame {
         String input = JOptionPane.showInputDialog(rootPane, mensaje);
         while (input != null && input.isEmpty()) {
             input = JOptionPane.showInputDialog(rootPane, "Debe ingresar un valor. " + mensaje);
-        } 
+        }
         return input;
     }
-    
+
     /*Crea el modelo de lista a partir de recorrer la lista global en un bucle for
       Luego establece ese modelo en el componente listaDeTareas y limpia el text area. */
     private void actualizarLista() {
         DefaultListModel listaModelo = new DefaultListModel();
         for (int i = 0; i < lista.size(); i++) {
             Tarea tarea = lista.get(i);
-            listaModelo.addElement(tarea.getNombre());
+            if (!tarea.getEstado().equals("eliminada")) { //Filtra las tareas que están marcadas como eliminadas
+              listaModelo.addElement(tarea.getNombre());  
+            } 
         }
         listaDeTareas.setModel(listaModelo);
         textArea.setText("");
