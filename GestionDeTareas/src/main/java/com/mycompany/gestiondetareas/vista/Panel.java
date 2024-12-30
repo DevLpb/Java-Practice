@@ -168,34 +168,36 @@ public class Panel extends javax.swing.JFrame {
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
         List<Tarea> tareasParaEliminar = new ArrayList<>(); // Lista temporal para las tareas a eliminar
 
-        for (Tarea tarea : lista) {
-            switch (tarea.getEstado()) {
-                case "nueva":
-                    if (tarea.getId() == 0) {
-                        tareaDAO.addTarea(tarea); //Agregar una nueva tarea a la base de datos
-                        System.out.println("Tarea creada");
-                    }
-                    break;
-                case "editada":
-                    tareaDAO.updateTarea(tarea); //Actualizar tarea existente en la base de datos
-                    System.out.println("Tarea editada");
-                    break;
-                case "eliminada":
-                    tareaDAO.deleteTarea(tarea.getId()); //Eliminar tarea de la base de datos
-                    tareasParaEliminar.add(tarea); //Agregar a la lista de tareas para eliminar
-                    System.out.println("Eliminada");
-                    break;
-            }
+    for (Tarea tarea : lista) {
+        switch (tarea.getEstado()) {
+            case "nueva":
+                if (tarea.getId() == 0) {
+                    tareaDAO.addTarea(tarea); // Agregar una nueva tarea a la base de datos
+                }
+                break;
+            case "editada":
+                tareaDAO.updateTarea(tarea); // Actualizar tarea existente en la base de datos
+                break;
+            case "eliminada":
+                if (tarea.getId() != 0) {
+                    tareaDAO.deleteTarea(tarea.getId()); // Eliminar tarea de la base de datos
+                    tareasParaEliminar.add(tarea); // Agregar a la lista de tareas a eliminar
+                } else {
+                    System.out.println("No se pudo eliminar la tarea: " + tarea.getNombre() + " ID: " + tarea.getId());
+                }
+                break;
         }
+    }
 
-        lista.removeAll(tareasParaEliminar); //Elimina las tareas de la lista local;
-        actualizarLista(); //Actualiza la vista
-        //Reiniciar estados después de guardar
-        for (Tarea tarea : lista) {
-            tarea.setEstado(""); //Reinicia estado
-        }
+    lista.removeAll(tareasParaEliminar); // Elimina las tareas de la lista local después de guardar
+    actualizarLista(); // Actualiza la vista
 
-        JOptionPane.showMessageDialog(rootPane, "Cambios guardados con éxito", "Èxito", JOptionPane.INFORMATION_MESSAGE);
+    // Reiniciar estados después de guardar
+    for (Tarea tarea : lista) {
+        tarea.setEstado(""); // Reinicia estado
+    }
+
+    JOptionPane.showMessageDialog(rootPane, "Cambios guardados con éxito", "Éxito", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_btnGuardarActionPerformed
 
     //Crea una nueva tarea, el nombre es obligatorio.
@@ -219,17 +221,24 @@ public class Panel extends javax.swing.JFrame {
     }//GEN-LAST:event_btnNuevaTareaActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
-        int indice = listaDeTareas.getSelectedIndex(); //Guarda el lugar del elemento seleccionado en la variable "indice" 
-        try {
-            if (indice != -1) {
-                lista.get(indice).setEstado("eliminada"); //Cambia el estado de la tarea a "eliminada" 
-                //lista.remove(indice); //Elimina el elemento de la lista global usando el índice correspondiente 
-                actualizarLista();
-                JOptionPane.showMessageDialog(rootPane, "La tarea se eliminó con éxito", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                JOptionPane.showMessageDialog(rootPane, "No se pudo eliminar la tarea. Por favor, selecciona una tarea válida.", "Error", JOptionPane.ERROR_MESSAGE);
+        int indice = listaDeTareas.getSelectedIndex(); // Guarda el lugar del elemento seleccionado en la variable "indice"
+        if (indice != -1) {
+            // Filtrar las tareas eliminadas antes de realizar la eliminación
+            int validIndex = 0;
+            for (int i = 0; i < lista.size(); i++) {
+                Tarea tarea = lista.get(i);
+                if (!tarea.getEstado().equals("eliminada")) {
+                    if (validIndex == indice) {
+                        tarea.setEstado("eliminada"); // Cambia el estado de la tarea a "eliminada"
+                        System.out.println("Tarea marcada como eliminada: " + tarea.getNombre() + " Estado: " + tarea.getEstado());
+                        JOptionPane.showMessageDialog(rootPane, "La tarea se eliminó con éxito de la lista", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                        break;
+                    }
+                    validIndex++;
+                }
             }
-        } catch (IndexOutOfBoundsException e) {
+            actualizarLista(); // Actualizar la vista para reflejar el cambio
+        } else {
             JOptionPane.showMessageDialog(rootPane, "No se pudo eliminar la tarea. Por favor, selecciona una tarea válida.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnEliminarActionPerformed
@@ -249,9 +258,10 @@ public class Panel extends javax.swing.JFrame {
                 if (descripcion == null) {
                     return;
                 } //Cancela la edición
-                lista.get(indice).setNombre(nombre); //Altera el elemento de la lista global usando el índice correspondiente
-                lista.get(indice).setDescripcion(descripcion); //Altera el elemento de la lista global usando el índice correspondiente
-                lista.get(indice).setEstado("editada"); //Cambia el estado de la tarea a "editada"
+                Tarea tarea = lista.get(indice);
+                tarea.setNombre(nombre); //Altera el elemento de la lista global usando el índice correspondiente
+                tarea.setDescripcion(descripcion); //Altera el elemento de la lista global usando el índice correspondiente
+                tarea.setEstado("editada"); //Cambia el estado de la tarea a "editada"
                 actualizarLista();
                 JOptionPane.showMessageDialog(rootPane, "La tarea fue editada correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
             } else {
@@ -274,16 +284,25 @@ public class Panel extends javax.swing.JFrame {
     /*Crea el modelo de lista a partir de recorrer la lista global en un bucle for
       Luego establece ese modelo en el componente listaDeTareas y limpia el text area. */
     private void actualizarLista() {
-        DefaultListModel listaModelo = new DefaultListModel();
-        for (int i = 0; i < lista.size(); i++) {
-            Tarea tarea = lista.get(i);
-            if (!tarea.getEstado().equals("eliminada")) { //Filtra las tareas que están marcadas como eliminadas
-              listaModelo.addElement(tarea.getNombre());  
-            } 
+        DefaultListModel<String> listaModelo = new DefaultListModel<>();
+        for (Tarea tarea : lista) {
+            if (!tarea.getEstado().equals("eliminada")) { // Filtra las tareas eliminadas
+                listaModelo.addElement(tarea.getNombre());
+            }
         }
         listaDeTareas.setModel(listaModelo);
-        textArea.setText("");
+
+        // Asegurar que el índice seleccionado sea válido
+        int selectedIndex = listaDeTareas.getSelectedIndex();
+        if (selectedIndex != -1 && selectedIndex < listaModelo.getSize()) {
+            Tarea tareaSeleccionada = lista.get(selectedIndex);
+            textArea.setText(tareaSeleccionada.getDescripcion());
+        } else {
+            textArea.setText("");
+        }
+
         actualizarVisibilidadBotones();
+        System.out.println("Lista actualizada: " + listaModelo.size() + " elementos visibles.");
     }
 
     private void actualizarVisibilidadBotones() {
@@ -304,8 +323,20 @@ public class Panel extends javax.swing.JFrame {
             public void valueChanged(ListSelectionEvent e) {
                 if (!e.getValueIsAdjusting()) {
                     int indice = listaDeTareas.getSelectedIndex();
-                    if (indice != -1) {
-                        textArea.setText(lista.get(indice).getDescripcion());
+                    if (indice != -1 && indice < lista.size()) {
+                        // Filtrar las tareas eliminadas antes de mostrar la descripción
+                        int validIndex = 0;
+                        for (Tarea tarea : lista) {
+                            if (!tarea.getEstado().equals("eliminada")) {
+                                if (validIndex == indice) {
+                                    textArea.setText(tarea.getDescripcion());
+                                    break;
+                                }
+                                validIndex++;
+                            }
+                        }
+                    } else {
+                        textArea.setText("");
                     }
                 }
             }
