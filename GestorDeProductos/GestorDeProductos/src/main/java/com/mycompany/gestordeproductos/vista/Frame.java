@@ -164,20 +164,26 @@ public class Frame extends javax.swing.JFrame {
         Producto producto = new Producto();
 
         String nombre = leerEntradaString("Ingrese el nombre del producto.");
-        if (nombre == null) { return; }
+        if (nombre == null) {
+            return;
+        }
         producto.setNombre(nombre);
-      //  JOptionPane.showMessageDialog(rootPane, "Nombre agregado.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-        
+        //  JOptionPane.showMessageDialog(rootPane, "Nombre agregado.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+
         Double precio = leerEntradaDouble("Ingrese el precio del producto.");
-        if (precio == null) { return; } 
+        if (precio == null) {
+            return;
+        }
         producto.setPrecio(precio);
-      //  JOptionPane.showMessageDialog(rootPane, "Precio agregado.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-        
+        //  JOptionPane.showMessageDialog(rootPane, "Precio agregado.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+
         Integer cantidad = leerEntradaInt("Ingrese la cantidad del producto por unidad.");
-        if (cantidad == null) {return; }
+        if (cantidad == null) {
+            return;
+        }
         producto.setCantidad(cantidad);
-      //  JOptionPane.showMessageDialog(rootPane, "Cantidad agregada.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-        
+        //  JOptionPane.showMessageDialog(rootPane, "Cantidad agregada.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+
         lista.add(producto);
         JOptionPane.showMessageDialog(rootPane, "Producto creado.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
         actualizarLista();
@@ -185,8 +191,8 @@ public class Frame extends javax.swing.JFrame {
 
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
         int indice = listaDeProductos.getSelectedIndex(); //Guarda el lugar del elemento seleccionado en la variable "indice"
-        
-         try {
+
+        try {
             if (indice != -1) {
                 String nombre = leerEntradaString("Ingrese un nuevo nombre para el producto.");
                 if (nombre == null) {
@@ -197,7 +203,7 @@ public class Frame extends javax.swing.JFrame {
                 if (precio == null) {
                     return;
                 } //Cancela la edición
-                
+
                 Integer cantidad = leerEntradaInt("Ingrese una nueva cantidad para el producto.");
                 lista.get(indice).setNombre(nombre); //Altera el elemento de la lista global usando el índice correspondiente
                 lista.get(indice).setPrecio(precio); //Altera el elemento de la lista global usando el índice correspondiente
@@ -213,7 +219,20 @@ public class Frame extends javax.swing.JFrame {
     }//GEN-LAST:event_btnEditarActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
-        // TODO add your handling code here:
+        int indice = listaDeProductos.getSelectedIndex(); //Guarda el lugar del elemento seleccionado en la variable "indice"
+
+        try {
+            if (indice != -1) {
+                lista.remove(indice);
+                actualizarLista();
+                JOptionPane.showMessageDialog(rootPane, "Producto eliminado con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(rootPane, "No se pudo eliminar el producto. Seleccione un elemento válido.", "Fallo", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (IndexOutOfBoundsException e) {
+            JOptionPane.showMessageDialog(rootPane, "No se pudo eliminar el producto. Seleccione un elemento válido.", "Fallo", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
     }//GEN-LAST:event_btnEliminarActionPerformed
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
@@ -228,14 +247,14 @@ public class Frame extends javax.swing.JFrame {
         }
         return input;
     }
-    
+
     //Método que pide una entrada como String para el precio. Inicia un bucle 
     //y repite las peticiones hasta que la entrada sea válida.
     private double leerEntradaDouble(String mensaje) {
         String input = JOptionPane.showInputDialog(rootPane, mensaje);
         while (true) {
             if (input == null || input.isEmpty()) {
-                input = JOptionPane.showInputDialog(rootPane, "Debe ingresar un valor. " + mensaje); 
+                input = JOptionPane.showInputDialog(rootPane, "Debe ingresar un valor. " + mensaje);
             } else {
                 try {
                     double valor = Double.parseDouble(input);
@@ -252,7 +271,7 @@ public class Frame extends javax.swing.JFrame {
             }
         }
     }
-    
+
     //Método que pide una entrada como String para la cantidad. Inicia un bucle 
     //y repite las peticiones hasta que la entrada sea válida.
     private int leerEntradaInt(String mensaje) {
@@ -270,26 +289,26 @@ public class Frame extends javax.swing.JFrame {
                         return valor; // Si la entrada es válida y mayor o igual a cero, retorna el valor y rompe el bucle.
                     }
                 } catch (NumberFormatException e) {
-                    JOptionPane.showMessageDialog(rootPane, "Entrada inválida. Por favor, ingrese un número.", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(rootPane, "Entrada inválida. Por favor, ingrese un número entero.", "Error", JOptionPane.ERROR_MESSAGE);
                     input = JOptionPane.showInputDialog(rootPane, mensaje);
                 }
             }
         }
     }
-    
-      /*Crea el modelo de lista a partir de recorrer la lista global en un bucle for
+
+    /*Crea el modelo de lista a partir de recorrer la lista global en un bucle for
       Luego establece ese modelo en el componente listaDeTareas y limpia el text area. */
     private void actualizarLista() {
         DefaultListModel listaModelo = new DefaultListModel();
         for (int i = 0; i < lista.size(); i++) {
-           Producto producto = lista.get(i);
-           listaModelo.addElement(producto.getNombre());  
-            
+            Producto producto = lista.get(i);
+            listaModelo.addElement(producto.getNombre());
+
         }
         listaDeProductos.setModel(listaModelo);
         limpiarCajas();
     }
-    
+
     /*Event Listener que llena los cuadros de texto con los datos de cada elemento de la lista seleccionado. */
     private void agregarListSelectionListener() {
         listaDeProductos.addListSelectionListener(new ListSelectionListener() {
@@ -306,15 +325,13 @@ public class Frame extends javax.swing.JFrame {
             }
         });
     }
-    
+
     //Limpia los cuadros de texto.
     private void limpiarCajas() {
         txtNombre.setText("");
         txtPrecio.setText("");
         txtCantidad.setText("");
     }
-
-
 
     /**
      * @param args the command line arguments
