@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 /**
  *
@@ -17,6 +19,7 @@ public class Frame extends javax.swing.JFrame {
      */
     public Frame() {
         initComponents();
+        agregarListSelectionListener(); //Event Listener.
     }
 
     /**
@@ -163,28 +166,50 @@ public class Frame extends javax.swing.JFrame {
         String nombre = leerEntradaString("Ingrese el nombre del producto.");
         if (nombre == null) { return; }
         producto.setNombre(nombre);
-        JOptionPane.showMessageDialog(rootPane, "Nombre agregado.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+      //  JOptionPane.showMessageDialog(rootPane, "Nombre agregado.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
         
         Double precio = leerEntradaDouble("Ingrese el precio del producto.");
         if (precio == null) { return; } 
         producto.setPrecio(precio);
-        JOptionPane.showMessageDialog(rootPane, "Precio agregado.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+      //  JOptionPane.showMessageDialog(rootPane, "Precio agregado.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
         
         Integer cantidad = leerEntradaInt("Ingrese la cantidad del producto por unidad.");
         if (cantidad == null) {return; }
         producto.setCantidad(cantidad);
-        JOptionPane.showMessageDialog(rootPane, "Cantidad agregada.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+      //  JOptionPane.showMessageDialog(rootPane, "Cantidad agregada.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
         
         lista.add(producto);
         JOptionPane.showMessageDialog(rootPane, "Producto creado.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
         actualizarLista();
-        System.out.println(lista.get(0).getNombre());
-        System.out.println(lista.get(0).getPrecio());
-        System.out.println(lista.get(0).getCantidad());
     }//GEN-LAST:event_btnNuevoActionPerformed
 
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
-        // TODO add your handling code here:
+        int indice = listaDeProductos.getSelectedIndex(); //Guarda el lugar del elemento seleccionado en la variable "indice"
+        
+         try {
+            if (indice != -1) {
+                String nombre = leerEntradaString("Ingrese un nuevo nombre para el producto.");
+                if (nombre == null) {
+                    return;
+                } //Cancela la edición
+
+                Double precio = leerEntradaDouble("Ingrese un nuevo precio para el producto.");
+                if (precio == null) {
+                    return;
+                } //Cancela la edición
+                
+                Integer cantidad = leerEntradaInt("Ingrese una nueva cantidad para el producto.");
+                lista.get(indice).setNombre(nombre); //Altera el elemento de la lista global usando el índice correspondiente
+                lista.get(indice).setPrecio(precio); //Altera el elemento de la lista global usando el índice correspondiente
+                lista.get(indice).setCantidad(cantidad); //Altera el elemento de la lista global usando el indice correspondiente.
+                actualizarLista();
+                JOptionPane.showMessageDialog(rootPane, "El producto fue editado correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(rootPane, "No se pudo editar el producto. Por favor, selecciona un producto válido.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (IndexOutOfBoundsException e) {
+            JOptionPane.showMessageDialog(rootPane, "No se pudo editar el producto. Por favor, selecciona un producto válido.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_btnEditarActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
@@ -262,9 +287,27 @@ public class Frame extends javax.swing.JFrame {
             
         }
         listaDeProductos.setModel(listaModelo);
-//        limpiarCajas();
+        limpiarCajas();
     }
     
+    /*Event Listener que llena los cuadros de texto con los datos de cada elemento de la lista seleccionado. */
+    private void agregarListSelectionListener() {
+        listaDeProductos.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (!e.getValueIsAdjusting()) {
+                    int indice = listaDeProductos.getSelectedIndex();
+                    if (indice != -1) {
+                        txtNombre.setText(lista.get(indice).getNombre());
+                        txtPrecio.setText(String.valueOf(lista.get(indice).getPrecio()));
+                        txtCantidad.setText(String.valueOf(lista.get(indice).getCantidad()));
+                    }
+                }
+            }
+        });
+    }
+    
+    //Limpia los cuadros de texto.
     private void limpiarCajas() {
         txtNombre.setText("");
         txtPrecio.setText("");
