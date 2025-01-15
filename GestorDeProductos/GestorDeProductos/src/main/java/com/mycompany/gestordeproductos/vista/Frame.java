@@ -1,6 +1,8 @@
 package com.mycompany.gestordeproductos.vista;
 
 import com.mycompany.gestordeproductos.modelo.Producto;
+import com.mycompany.gestordeproductos.dao.ProductoDAO;
+import com.mycompany.gestordeproductos.dao.ProductoDAOImpl;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.DefaultListModel;
@@ -22,6 +24,18 @@ public class Frame extends javax.swing.JFrame {
         agregarListSelectionListener(); //Event Listener.
     }
 
+    private ProductoDAO productoDAO;
+    
+    public void inicializarDAO() {
+        productoDAO = new ProductoDAOImpl(); //Inicializa el DAO
+        cargarDatos(); //Carga los datos de la BD a la lista visible
+    }
+    
+    public void cargarDatos(){
+        lista = productoDAO.getAllProductos();
+        actualizarLista();
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -41,7 +55,6 @@ public class Frame extends javax.swing.JFrame {
         txtNombre = new javax.swing.JTextField();
         txtCantidad = new javax.swing.JTextField();
         btnNuevo = new javax.swing.JButton();
-        btnGuardar = new javax.swing.JButton();
         btnEditar = new javax.swing.JButton();
         btnEliminar = new javax.swing.JButton();
 
@@ -58,17 +71,10 @@ public class Frame extends javax.swing.JFrame {
 
         jLabel4.setText("Cantidad:");
 
-        btnNuevo.setText("Nuevo");
+        btnNuevo.setText("Agregar Producto");
         btnNuevo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnNuevoActionPerformed(evt);
-            }
-        });
-
-        btnGuardar.setText("Guardar");
-        btnGuardar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnGuardarActionPerformed(evt);
             }
         });
 
@@ -96,12 +102,6 @@ public class Frame extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(btnNuevo))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(btnEditar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnEliminar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnGuardar))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(60, 60, 60)
@@ -119,7 +119,14 @@ public class Frame extends javax.swing.JFrame {
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(txtNombre, javax.swing.GroupLayout.DEFAULT_SIZE, 104, Short.MAX_VALUE)
                                     .addComponent(txtPrecio)))))
-                    .addComponent(jLabel1))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(btnEditar)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnEliminar))
+                            .addComponent(jLabel1))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -148,7 +155,6 @@ public class Frame extends javax.swing.JFrame {
                 .addComponent(btnNuevo)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 73, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnGuardar)
                     .addComponent(btnEditar)
                     .addComponent(btnEliminar))
                 .addContainerGap())
@@ -185,12 +191,14 @@ public class Frame extends javax.swing.JFrame {
         //  JOptionPane.showMessageDialog(rootPane, "Cantidad agregada.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
 
         lista.add(producto);
+        productoDAO.addProducto(producto);
         JOptionPane.showMessageDialog(rootPane, "Producto creado.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
         actualizarLista();
     }//GEN-LAST:event_btnNuevoActionPerformed
 
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
         int indice = listaDeProductos.getSelectedIndex(); //Guarda el lugar del elemento seleccionado en la variable "indice"
+        Producto producto = lista.get(indice);
 
         try {
             if (indice != -1) {
@@ -205,9 +213,10 @@ public class Frame extends javax.swing.JFrame {
                 } //Cancela la edición
 
                 Integer cantidad = leerEntradaInt("Ingrese una nueva cantidad para el producto.");
-                lista.get(indice).setNombre(nombre); //Altera el elemento de la lista global usando el índice correspondiente
-                lista.get(indice).setPrecio(precio); //Altera el elemento de la lista global usando el índice correspondiente
-                lista.get(indice).setCantidad(cantidad); //Altera el elemento de la lista global usando el indice correspondiente.
+                producto.setNombre(nombre); //Altera el elemento de la lista global usando el índice correspondiente
+                producto.setPrecio(precio); //Altera el elemento de la lista global usando el índice correspondiente
+                producto.setCantidad(cantidad); //Altera el elemento de la lista global usando el indice correspondiente.
+                productoDAO.updateProducto(producto);
                 actualizarLista();
                 JOptionPane.showMessageDialog(rootPane, "El producto fue editado correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
             } else {
@@ -220,9 +229,10 @@ public class Frame extends javax.swing.JFrame {
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
         int indice = listaDeProductos.getSelectedIndex(); //Guarda el lugar del elemento seleccionado en la variable "indice"
-
+   
         try {
             if (indice != -1) {
+                productoDAO.deleteProducto(lista.get(indice).getId());
                 lista.remove(indice);
                 actualizarLista();
                 JOptionPane.showMessageDialog(rootPane, "Producto eliminado con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
@@ -234,10 +244,6 @@ public class Frame extends javax.swing.JFrame {
             return;
         }
     }//GEN-LAST:event_btnEliminarActionPerformed
-
-    private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnGuardarActionPerformed
 
     //Método que pide una entrada para el nombre. Si está vacía, repite la petición.
     private String leerEntradaString(String mensaje) {
@@ -297,7 +303,7 @@ public class Frame extends javax.swing.JFrame {
     }
 
     /*Crea el modelo de lista a partir de recorrer la lista global en un bucle for
-      Luego establece ese modelo en el componente listaDeTareas y limpia el text area. */
+      Luego establece ese modelo en el componente listaDeProductos y limpia el text area. */
     private void actualizarLista() {
         DefaultListModel listaModelo = new DefaultListModel();
         for (int i = 0; i < lista.size(); i++) {
@@ -371,7 +377,6 @@ public class Frame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnEditar;
     private javax.swing.JButton btnEliminar;
-    private javax.swing.JButton btnGuardar;
     private javax.swing.JButton btnNuevo;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
